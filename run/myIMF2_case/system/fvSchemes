@@ -1,0 +1,88 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| fvSchemes                                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+
+wallDist
+{
+    method  meshWave;
+}
+
+ddtSchemes
+{
+    // 含强源项的瞬态更稳
+    default         backward;
+}
+
+gradSchemes
+{
+    // 对关键量用 cellLimited 限梯度，抑制尖峰
+    default         leastSquares;
+    grad(p)         cellLimited Gauss linear 1;
+    grad(U)         cellLimited Gauss linear 1;
+    grad(T)         cellLimited Gauss linear 1;
+    grad(alpha.*)   leastSquares;
+}
+
+divSchemes
+{
+    // 动量：从 limitedLinearV 0.5 → LUST，更二阶且比 linearUpwind 稳
+    div(rhoPhi,U)  Gauss LUST grad(U);
+    div(phi,U)     Gauss LUST grad(U);
+    
+    // 能量：从 upwind → limitedLinear 0.75，仍较为“有界”
+    div(rhoCpPhi,T)  Gauss limitedLinear 0.75;
+    div(phi,T)       Gauss limitedLinear 0.75;
+
+    // VOF
+    div(phi,alpha)             Gauss vanLeer;
+    div(phirb,alpha)           Gauss interfaceCompression;
+
+    // ★ 动量扩散：同时给两种键名，避免不匹配
+    div(((rho*nuEff)*dev2(T(grad(U))))) Gauss linear;
+    div((muEff*dev2(T(grad(U)))))       Gauss linear;
+    
+    // 兼容项（若求解器会查找）
+    div(rhoCpPhiT,T)     Gauss limitedLinear 0.75;
+    div(rhoCpPhiConv,T)  Gauss limitedLinear 0.75;
+    
+    default  Gauss linear;// ← 新增，兜底
+}
+
+laplacianSchemes
+{
+    // 维持 corrected，但配合下面 limited snGrad 使用
+    default         Gauss linear corrected;
+    laplacian(Deff,T) Gauss linear corrected;
+    laplacian(kappaf,T)   Gauss linear corrected;
+
+}
+
+interpolationSchemes
+{
+    default         linear;
+}
+
+snGradSchemes
+{
+    // 限制法向梯度的非正交修正强度，减小网格非正交引起的振荡
+    default         limited 0.33;
+}
+
+fluxRequired
+{
+    default         no;
+    p_rgh;
+    alpha.polymer;
+    alpha.nitrogen;
+    alpha.volatiles;
+    // T; // 可选：若需要写出 T 的通量则开启
+}
+

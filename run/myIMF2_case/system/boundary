@@ -1,0 +1,86 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+6
+(
+    meltInlet
+    {
+        type            patch;
+        //inGroups        1(patch);
+        nFaces          896;
+        startFace       7317911;
+    }
+    gasOutlet
+    {
+        type            patch;
+        //inGroups        1(patch);
+        nFaces          11964;
+        startFace       7318807;
+    }
+    heatedWall
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          24448;
+        startFace       7330771;
+    }
+    cycLo
+    {
+        type            cyclicAMI;
+        inGroups        1(cyclicAMI);
+        nFaces          22347;
+        startFace       7355219;
+        
+        neighbourPatch  cycHi;
+        
+        // 旋转周期性：绕 y 轴（柱轴）旋转
+        
+        transform       rotational;
+        rotationAxis    (0 1 0);
+        // 轴线上任一点即可，通常用全局原点；若你的轴不在原点，填轴线上任一点
+        rotationCentre  (0 0 0);
+        // 可选：提高配对鲁棒性
+        // matchTolerance 1e-4;
+        // lowWeightCorrection yes;
+        
+    }
+    cycHi
+    {
+        type            cyclicAMI;
+        inGroups        1(cyclicAMI);
+        nFaces          29223;
+        startFace       7377566;
+        
+        neighbourPatch  cycLo;
+        transform       rotational;
+        rotationAxis    (0 1 0);
+        rotationCentre  (0 0 0);
+        // 可选：提高配对鲁棒性
+        // matchTolerance 1e-4;
+        // lowWeightCorrection yes;
+        
+    }
+    bottomWall
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          12860;
+        startFace       7406789;
+    }
+)
+
+// ************************************************************************* //

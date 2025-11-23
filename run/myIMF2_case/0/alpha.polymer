@@ -1,0 +1,68 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| alpha of polymer (liquid)                                                  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      alpha.polymer;
+}
+dimensions      [0 0 0 0 0 0 0];
+
+// 初始无液体，液体从顶部 5 mm 入口进入
+internalField   uniform 0;
+
+boundaryField
+{
+    frontAndBack { type empty; }
+
+    // 左侧加热壁：强亲壁
+    heatedWall
+    {
+        type    constantAlphaContactAngle;
+        theta0  10;          // degrees
+        limit   gradient;
+        value   uniform 0;
+    }
+
+    // 其他墙面：中等接触角
+    rightWall
+    {
+        type    constantAlphaContactAngle;
+        theta0  35;
+        limit   gradient;
+        value   uniform 0;
+    }
+    topWall
+    {
+        type    constantAlphaContactAngle;
+        theta0  35;
+        limit   gradient;
+        value   uniform 0;
+    }
+    bottomWall
+    {
+        type    constantAlphaContactAngle;
+        theta0  35;
+        limit   gradient;
+        value   uniform 0;
+    }
+
+    // 顶部 5 mm 入口：纯液体
+    meltInlet
+    {
+        type    fixedValue;
+        value   uniform 1;
+    }
+
+    // 右侧出口：回流时设为气相（α_l=0）
+    outlet
+    {
+        type        inletOutlet;
+        inletValue  uniform 0;
+        value       uniform 0;
+    }
+}
+

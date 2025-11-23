@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Velocity field U                                                           |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    frontAndBack { type empty; }
+
+    // 墙面无滑移
+    heatedWall { type noSlip; }
+    rightWall  { type noSlip; }
+    topWall    { type noSlip; }
+    bottomWall { type noSlip; }
+
+    // 顶部 5 mm 入口：向下（y 向上 => 负号）
+    meltInlet
+    {
+        type  fixedValue;
+        value uniform (0 -0.5 0);   // 需要可再调
+    }
+
+    // 右侧出口：与压力相容的出入口速度
+    outlet
+    {
+        type  pressureInletOutletVelocity;
+        value uniform (0 0 0);
+    }
+}
+

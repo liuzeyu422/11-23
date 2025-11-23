@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| alpha of volatiles                                                         |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      alpha.volatiles;
+}
+dimensions      [0 0 0 0 0 0 0];
+
+// 初始无挥发分
+internalField   uniform 0;
+
+boundaryField
+{
+    frontAndBack { type empty; }
+
+    // 气相在壁面统一用零梯度
+    heatedWall  { type constantAlphaContactAngle; theta0 170; limit gradient; value uniform 0; }
+    rightWall   { type constantAlphaContactAngle; theta0 170; limit gradient; value uniform 0; }
+    topWall     { type constantAlphaContactAngle; theta0 170; limit gradient; value uniform 0; }
+    bottomWall  { type constantAlphaContactAngle; theta0 170; limit gradient; value uniform 0; }
+
+    // 入口不含挥发分
+    meltInlet
+    {
+        type    fixedValue;
+        value   uniform 0;
+    }
+
+    // 出口回流不带挥发分
+    outlet
+    {
+        type        inletOutlet;
+        inletValue  uniform 0;
+        value       uniform 0;
+    }
+}
+

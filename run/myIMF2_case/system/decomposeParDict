@@ -1,0 +1,21 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version 2.0;
+    format  ascii;
+    class   dictionary;
+    object  decomposeParDict;
+}
+numberOfSubdomains 4;        // 根据 CPU/内存调整 
+method scotch;               // 自动分区，适合复杂网格
+distributed no;
+roots ();
+
+
+// ************************************************************************* //

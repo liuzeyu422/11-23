@@ -1,0 +1,123 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| transportProperties for myinterMixingFoam2                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+
+/* phases 与 0/ 文件名一致 */
+phases (polymer nitrogen volatiles);
+
+// ===== polymer (alpha1) =====
+polymer
+{
+    transportModel  CrossPowerLaw;
+    
+    nu0   nu0   [0 2 -1 0 0 0 0] 5.333e-5;
+    nuInf nuInf [0 2 -1 0 0 0 0] 5.333e-5;
+    m     m     [0 0 1 0 0 0 0]  1;
+    n     n     [0 0 0 0 0 0 0]  1;
+
+    // 四段式：名字 + 名字 + 维度 + 数值
+    /*CrossPowerLawCoeffs
+    {
+        nu0   nu0   [0 2 -1 0 0 0 0] 5.333e-5;
+        nuInf nuInf [0 2 -1 0 0 0 0] 5.333e-5;
+        m     m     [0 0 1 0 0 0 0]  1;
+        n     n     [0 0 0 0 0 0 0]  1;
+    }*/
+
+    rho   [1 -3 0 0 0 0 0] 900;
+    cp    [0 2 -2 -1 0 0 0] 4316.7;
+    Pr    [0 0 0 0 0 0 0]   460.448;
+}
+
+// ===== nitrogen (alpha2) =====
+nitrogen
+{
+    transportModel  Newtonian;
+    rho   [1 -3 0 0 0 0 0] 1.2;
+    nu    [0 2 -1 0 0 0 0] 1.5417e-5;
+    cp    [0 2 -2 -1 0 0 0] 1038;
+    Pr    [0 0 0 0 0 0 0]   0.711222;
+}
+
+// ===== volatiles (alpha3) =====
+volatiles
+{
+    transportModel  Newtonian;
+    rho   [1 -3 0 0 0 0 0] 1.5;
+    nu    [0 2 -1 0 0 0 0] 3.473e-5;
+    cp    [0 2 -2 -1 0 0 0] 2900.3;
+    Pr    [0 0 0 0 0 0 0]   7.5552815;
+}
+
+/* —— 兼容你代码里旧的相名（一些源码在读 plastic/vapours） —— */
+/*plastic   // alias of polymer
+{
+    transportModel  CrossPowerLaw;
+
+    // 四段式：名字 + 名字 + 维度 + 数值
+    CrossPowerLawCoeffs
+    {
+        nu0   nu0   [0 2 -1 0 0 0 0] 5.333e-5;
+        nuInf nuInf [0 2 -1 0 0 0 0] 5.333e-5;
+        m     m     [0 0 1 0 0 0 0]  1;
+        n     n     [0 0 0 0 0 0 0]  1;
+    }
+
+    rho   [1 -3 0 0 0 0 0] 900;
+    cp    [0 2 -2 -1 0 0 0] 4316.7;
+    Pr    [0 0 0 0 0 0 0]   460.448;
+}
+
+vapours  // alias of volatiles
+{
+    transportModel  Newtonian;
+    rho   [1 -3 0 0 0 0 0] 1.5;
+    nu    [0 2 -1 0 0 0 0] 3.473e-5;
+    cp    [0 2 -2 -1 0 0 0] 2900.3;
+    Pr    [0 0 0 0 0 0 0]   7.5552815;
+}*/
+
+/* D23 —— 用“四段式”让 >> 能读 */
+//D23 D23 [0 2 -1 0 0 0 0] 1e-5;
+D23 D23 [0 2 -1 0 0 0 0] 0;
+
+/* 界面张力 */
+sigma12 sigma12 [1 0 -2 0 0 0 0] 0.035;
+sigma13 sigma13 [1 0 -2 0 0 0 0] 0.035;
+sigma23 sigma23 [1 0 -2 0 0 0 0] 0;
+
+// ===== parameters for Wallis drag =====
+plateWidth   plateWidth   [0 1 0 0 0 0 0] 1.884;    // W，若是圆筒周长 2πR (R=0.3 m) 就是 1.884
+dragBandAlphaMin 0.05;                 // interface band limits for drag建议收紧带宽，数值更稳
+dragBandAlphaMax 0.95;
+
+
+phaseChangeTwoPhaseMixture Merkle;
+MerkleCoeffs
+{
+    // A_s = 9.24e19 / 60  [s^-1]
+    preExp  preExp  [0 0 -1 0 0 0 0] 1.54e15; //论文中为1.54e18
+
+    // EoverR = E/R = 314700/8.314  [K]
+    EoverR  EoverR  [0 0 0 1 0 0 0] 3.785e4;
+    
+    // Optional guards (recommended):
+    TminArr  TminArr  [0 0 0 1 0 0 0] 753;     // K  低于此温度不反应
+    TmaxArr  TmaxArr  [0 0 0 1 0 0 0] 1200;    // K  阿累尼乌斯温度上限（可很大）
+    TexpMin  TexpMin  [0 0 0 1 0 0 0] 300;     // K  指数分母下限，防止 T<=0
+    lnExpMax  lnExpMax  [0 0 0 0 0 0 0] 50;      // 无量纲；指数上限保险
+}
+CdragWallis 0.01;
+dragDeltaMin 1e-4;
+dragDeltaMax 2e-3;
+/* 饱和压（Pa）：此处对热解模型不使用，但保留以兼容接口 */
+pSat pSat [1 -1 -2 0 0 0 0] 101325;
+

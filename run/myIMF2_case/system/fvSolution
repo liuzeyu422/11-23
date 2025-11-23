@@ -1,0 +1,120 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| fvSolution                                                                |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+
+solvers
+{
+    // ---- alpha：多做一次纠正与子循环，保持 0~1 有界
+    "alpha.*"
+    {
+        nAlphaCorr          2;
+        nAlphaSubCycles     3;
+        MULESCorr           yes;
+        cAlpha              0.6;   // ★ 必填：界面压缩系数
+        icAlpha             0;
+
+        nLimiterIter        2;
+
+        solver              smoothSolver;
+        smoother            symGaussSeidel;
+        tolerance           1e-10;
+        relTol              0;
+    }
+
+    "alpha.*Final"
+    {
+        nLimiterIter        0;
+        solver              smoothSolver;
+        smoother            symGaussSeidel;
+        tolerance           1e-11;
+        relTol              0;
+    }
+
+    // ---- pressure
+    p_rgh
+    {
+        solver              GAMG;
+        tolerance           1e-6;
+        relTol              0.05;
+        smoother            DICGaussSeidel;
+        cacheAgglomeration  true;
+        nCellsInCoarsestLevel 80;
+        agglomerator        faceAreaPair;
+        mergeLevels         1;
+    }
+    p_rghFinal
+    {
+        $p_rgh;
+        relTol              0;
+    }
+
+    // ---- velocity
+    U
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-9;
+        relTol          0.05;
+    }
+    UFinal
+    {
+        $U;
+        relTol          0;
+    }
+
+    // ---- temperature
+    T
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          0.05;
+    }
+    TFinal
+    {
+        $T;
+        relTol          0;
+    }
+}
+
+PIMPLE
+{
+    nOuterCorrectors          4;
+    nCorrectors               2;
+    nNonOrthogonalCorrectors  2;
+    
+    // ★ alpha/MULES 控制 —— 建议放在这里
+    nAlphaCorr                2;
+    nAlphaSubCycles           3;
+    MULESCorr                 yes;
+    cAlpha                    0.6;
+    icAlpha                   0;
+    nLimiterIter              2;
+
+    // ★ 这里不要再放 nAlphaCorr/MULES/cAlpha 等 alpha 控制项
+    residualControl
+    {
+        U     { tolerance 1e-9; relTol 0.03; }
+        p_rgh { tolerance 1e-9; relTol 0.03; }
+        T     { tolerance 1e-11; relTol 0.03; }
+    }
+}
+
+relaxationFactors
+{
+    equations
+    {
+        U       0.45;
+        p_rgh   0.18;
+        T       0.28;
+    }
+}
+

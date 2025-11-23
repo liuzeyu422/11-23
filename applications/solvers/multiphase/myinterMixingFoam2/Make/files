@@ -1,0 +1,5 @@
+incompressibleThreePhaseMixture/incompressibleThreePhaseMixture.C
+threePhaseInterfaceProperties/threePhaseInterfaceProperties.C
+interMixingFoam.C
+
+EXE = $(FOAM_USER_APPBIN)/myinterMixingFoam2

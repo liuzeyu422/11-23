@@ -1,0 +1,37 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| p_rgh                                                                      |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      p_rgh;
+}
+dimensions      [1 -1 -2 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    frontAndBack { type empty; }
+
+    // 与无滑移/壁面相容
+    heatedWall { type fixedFluxPressure; value uniform 0; }
+    rightWall  { type fixedFluxPressure; value uniform 0; }
+    topWall    { type fixedFluxPressure; value uniform 0; }
+    bottomWall { type fixedFluxPressure; value uniform 0; }
+
+    // 顶部入口：已给定速度，仍用 fixedFluxPressure
+    meltInlet  { type fixedFluxPressure; value uniform 0; }
+
+    // 右侧顶端 30 mm 出口：对接外界表压 0
+    outlet
+    {
+        type  prghTotalPressure;   // 你当前求解器使用该边界；若版本不支持，改 totalPressure
+        p0    uniform 0;
+        value uniform 0;
+    }
+}
+

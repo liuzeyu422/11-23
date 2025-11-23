@@ -1,0 +1,10 @@
+dragModels/dragModel/dragModel.C
+dragModels/dragModel/newDragModel.C
+dragModels/WenYu/WenYu.C
+
+swarmCorrections/swarmCorrection/swarmCorrection.C
+swarmCorrections/swarmCorrection/newSwarmCorrection.C
+swarmCorrections/noSwarm/noSwarm.C
+swarmCorrections/TomiyamaSwarm/TomiyamaSwarm.C
+
+LIB = $(FOAM_USER_LIBBIN)/libcompressibleVOFInterfacialModels

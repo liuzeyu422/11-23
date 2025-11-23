@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : 5.x-f6b3a15832a1
+Exec   : myinterMixingFoam2 -case .
+Date   : Sep 19 2025
+Time   : 21:33:39
+Host   : "dyfluid-virtual-machine"
+PID    : 17280
+I/O    : uncollated
+Case   : /home/dyfluid/OpenFOAM/dyfluid-58.x/applications/solvers/multiphase/myinterMixingFoam2
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+

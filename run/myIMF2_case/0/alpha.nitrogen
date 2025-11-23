@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+|  Field: alpha.nitrogen                                                     |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      alpha.nitrogen;
+}
+dimensions      [0 0 0 0 0 0 0];
+
+// 初始全域充满氮气
+internalField   uniform 1;
+
+boundaryField
+{
+    frontAndBack { type empty; }
+
+  
+    heatedWall  { type constantAlphaContactAngle; theta0 170; limit gradient; value uniform 0; }
+    rightWall   { type constantAlphaContactAngle; theta0 170; limit gradient; value uniform 0; }
+    topWall     { type constantAlphaContactAngle; theta0 170; limit gradient; value uniform 0; }
+    bottomWall  { type constantAlphaContactAngle; theta0 170; limit gradient; value uniform 0; }
+
+    // 顶部 5 mm 入口：无氮气
+    meltInlet
+    {
+        type    fixedValue;
+        value   uniform 0;
+    }
+
+    // 右侧顶端 30 mm 出口：回流时置为氮气
+    outlet
+    {
+        type        inletOutlet;
+        inletValue  uniform 1;
+        value       uniform 1;
+    }
+}
+

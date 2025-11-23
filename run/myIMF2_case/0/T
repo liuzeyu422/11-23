@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Temperature field T                                                        |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      T;
+}
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 300;
+
+boundaryField
+{
+    frontAndBack { type empty; }
+
+    // 左侧加热壁恒温
+    heatedWall
+    {
+        type  fixedValue;
+        value uniform 823;
+    }
+
+    // 其他墙面绝热
+    rightWall  { type zeroGradient; }
+    topWall    { type zeroGradient; }
+    bottomWall { type zeroGradient; }
+
+    // 顶部 5 mm 入口温度
+    meltInlet
+    {
+        type  fixedValue;
+        value uniform 623;
+    }
+
+    // 出口：常规外流零梯度
+    outlet { type zeroGradient; }
+}
+

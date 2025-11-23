@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| setFieldsDict — 靠壁预置液膜（圆筒，轴向 y）                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+
+// 1) 全域：纯氮气 + 300 K
+defaultFieldValues
+(
+    volScalarFieldValue alpha.polymer    0
+    volScalarFieldValue alpha.nitrogen   1
+    volScalarFieldValue alpha.volatiles  0
+    volScalarFieldValue T                300
+);
+
+// 2) 两个同轴圆柱叠加：先写外圈液体，再把内核抠回气体
+regions
+(
+    // 外半径 R=0.30 m：写成液体 + 623 K
+    cylinderToCell
+    {
+        p1     (0     0.0  0);
+        p2     (0     1.6  0);
+        radius 0.30;
+        fieldValues
+        (
+            volScalarFieldValue alpha.polymer    1
+            volScalarFieldValue alpha.nitrogen   0
+            volScalarFieldValue alpha.volatiles  0
+            volScalarFieldValue T                623
+        );
+    }
+
+    // 内半径 Rin=0.2997 m：抠回气体 + 300 K
+    cylinderToCell
+    {
+        p1     (0     0.0  0);
+        p2     (0     1.6  0);
+        radius 0.2990;   // 若要 δ0=5 mm 改成 0.295
+        fieldValues
+        (
+            volScalarFieldValue alpha.polymer    0
+            volScalarFieldValue alpha.nitrogen   1
+            volScalarFieldValue alpha.volatiles  0
+            volScalarFieldValue T                300
+        );
+    }
+);
+
